@@ -54,12 +54,10 @@ public class Disposants {
     }
 
     public boolean proposantPrefere(int proposant1Id, int proposant2Id) {
-        return getRang(proposant1Id) < getRang(proposant2Id);
+        return getRang(proposant1Id) <= getRang(proposant2Id);
     }
 
     public Couple[] getCouples() {
         return souhaits.toArray(new Couple[souhaits.size()]);
     }
-
-
 }

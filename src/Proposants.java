@@ -80,6 +80,4 @@ public class Proposants {
     public void removeCouple() {
         couples[getPosition(this.id)].setCouple();
     }
-
-
 }
