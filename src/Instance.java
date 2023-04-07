@@ -13,47 +13,40 @@ public class Instance {
         disposants = new ArrayList<>();
         proposants = new ArrayList<>();
 
-        //Remplissage des disposants
+        //Creation des disposants et des proposants
         for (int i = 0; i < size; i++) {
-            Disposant newDisposant = new Disposant(i, size, seed);
-            newDisposant.genererListeSouhait();
+            Disposant newDisposant = new Disposant(i, seed);
+            seed++;
+            Proposant newProposant = new Proposant(i, seed);
             seed++;
             disposants.add(newDisposant);
+            proposants.add(newProposant);
         }
 
-        //Remplissage des proposants
+        //Remplissage des listes de souhaits
         for (int i = 0; i < size; i++) {
-            Proposant newProposants = new Proposant(i, size, seed);
-            newProposants.getPref();
-            seed++;
-            proposants.add(newProposants);
+            disposants.get(i).genereListeSouhaits(proposants);
+            proposants.get(i).genereListeSouhaits(disposants);
         }
 
-        //Tri par ordre croissant des pos dans chaque liste de préférences
-        for (Proposant p : proposants) {
-            p.trigetCouples();
-        }
-        for (Disposant d : disposants) {
-            d.getCouples();
-        }
     }
 
     Mariages runGS() {
         // TODO!!!
+        return null;
     }
 
 
     void affiche() {
         //Affichage des disposants
         for (Disposant d : disposants) {
-            System.out.println("Disposant " + d.getId() + ": " + Arrays.toString(d.getCouples()));
+            System.out.printf("%s : %s\n", d, d.getSouhaits());
         }
 
         //Affichage des proposants
-        System.out.println("Contenu des proposants : ");
         for (Proposant p : proposants) {
-            System.out.println("Proposant " + p.getId() + ": " + Arrays.toString(p.trigetCouples()));
-        }        
+            System.out.printf("%s : %s\n", p, p.getSouhaits());
+        }
     }
 
 

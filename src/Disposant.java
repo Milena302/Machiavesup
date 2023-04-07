@@ -1,62 +1,42 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Disposant {
-    private int id;
-    private int taille;
-    private ArrayList<Pair<Proposant, Integer>> souhaits;
-    int seed;
+    private final int id;
+    private HashMap<Proposant, Integer> souhaits;
+    private final int seed;
 
-    public Disposant(int id, int taille, int seed) {
+    public Disposant(int id, int seed) {
+        // taille: nombre de proposants (= de disposants)
         this.id = id;
-        this.taille = taille;
-        this.souhaits = new ArrayList<>();
         this.seed = seed;
+        this.souhaits = new HashMap<>();
     }
 
     public int getId() {
         return id;
     }
 
-    public int getTaille() {
-        return taille;
-    }
 
-    public void genererListeSouhait(ArrayList<Proposant> proposants) {
+    public void genereListeSouhaits(ArrayList<Proposant> proposants) {
         Random random = new Random(seed);
-        ArrayList<Integer> indices = new ArrayList<>();
-        for (int i = 0; i < taille; i++) {
-            indices.add(i);
+        int rangMax = proposants.size(); // choix arbitraire!
+        for (Proposant p : proposants) {
+            Integer rang = random.nextInt(rangMax);
+            this.souhaits.put(p, rang);
         }
-        Collections.shuffle(indices, random);
-        for (int i = 0; i < taille; i++) {
-            Pair<Proposant, Integer> pair = new Pair<>(proposants.get(indices.get(i)), i+1);
-            souhaits.add(pair);
-        }
-        // A enlever?? utile pour l'affichage?
-        Collections.sort(souhaits);
-    }
-
-    public Couple getSouhait(int index) {
-        return souhaits.get(index);
-    }
-
-    public int getRang(Proposant p) {
-        for (Couple couple : souhaits) {
-            if (couple.getId() == p.getId()) {
-                return couple.getPos();
-            }
-        }
-        assert(false);
-        return -1;
     }
 
     public boolean prefere(Proposant p1, Proposant p2) {
-        return getRang(p1) <= getRang(p2);
+        return this.souhaits.get(p1) <= this.souhaits.get(p2);
     }
 
-    public Couple[] getCouples() {
-        return souhaits.toArray(new Couple[souhaits.size()]);
+    @Override 
+    public String toString() { return "F" + id; }
+
+    public String getSouhaits() {
+        return this.souhaits.toString();
     }
 }
