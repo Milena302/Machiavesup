@@ -34,6 +34,10 @@ public class Instance {
     Mariages runGS() {
         // TODO!!!
         return null;
+        // méthodes à utiliser
+        // proposant.appelleSuivant
+        // disposant.prefere
+        // mariage.ajouteCouple et mariage.retireCouple et mariage.conjoint et le constructeur
     }
 
 
