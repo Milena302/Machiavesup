@@ -15,6 +15,9 @@ public class Main {
         i.estStable(couples);
         //couples.affiche();
         couples.afficheParProposant();
+        System.out.println("Plus le score est bas mieux c'est");
+        System.out.println("Le score vaut : " + i.calculeScore(couples));
+
 
         System.out.println("\nDans le sens inverse afin de prouver que les mariages ne sont pas stables");
         Instance ibis = new Instance(size, seed);
@@ -23,6 +26,8 @@ public class Main {
         ibis.estStable(couplesbis);
         //couplesbis.affiche();
         couplesbis.afficheParProposant();
+        System.out.println("Plus le score est bas mieux c'est");
+        System.out.println("Le score vaut : " + ibis.calculeScore(couplesbis));
 
 
         System.out.println("\n\n\nLe cas volage");
@@ -31,6 +36,9 @@ public class Main {
         i2.estStable(couplesvolage);
         //couplesvolage.affiche();
         couplesvolage.afficheParProposant();
+        System.out.println("Plus le score est bas mieux c'est");
+        System.out.println("Le score vaut : " + i2.calculeScore(couplesvolage));
+
 
         System.out.println("\nDans le sens inverse afin de prouver que les mariages ne sont pas stables");
         Instance i2bis = new Instance(size, seed);
@@ -39,5 +47,8 @@ public class Main {
         i2bis.estStable(couplesvolage2);
         //couplesvolage2.affiche();
         couplesvolage2.afficheParProposant();
+        System.out.println("Plus le score est bas mieux c'est");
+        System.out.println("Le score vaut : " + i2bis.calculeScore(couplesvolage2));
+
     }
 }

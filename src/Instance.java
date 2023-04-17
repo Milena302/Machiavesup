@@ -99,7 +99,19 @@ public class Instance {
     }
 
 
+
  */
+
+    public int calculeScore(Mariages couples) {
+        int score = 0;
+        for (Disposant d : disposants) {
+            Proposant conjoint = couples.conjoint(d);
+            int rang = d.getRang(conjoint);
+            score += rang;
+        }
+        return score;
+    }
+
     public boolean estStable(Mariages couples) {
         for (Map.Entry<Proposant, Disposant> couple : couples.couples.entrySet()) {
             Proposant p = couple.getKey();

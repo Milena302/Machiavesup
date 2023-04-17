@@ -60,6 +60,9 @@ public class Disposant {
         return souhaits;
     }
 
+    public Integer getRang(Proposant p) {
+        return this.souhaits.get(p);
+    }
 
     public boolean identique(Proposant p1, Proposant p2) {
         Integer rangP1 = this.souhaits.get(p1);
