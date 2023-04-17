@@ -11,7 +11,7 @@ public class Proposant {
     private ArrayList<Disposant> souhaits;
     private int rangAppel;
 
-    Disposant appelleSuivant() {
+    Disposant appelleSuivant(int taille) {
         // renvoie le disposant suivant dans la liste
         // on a suppose qu'il y a autant de proposant que de disposant,
         // et donc on n'atteint jamais la fin de la liste de souhaits
@@ -51,6 +51,20 @@ public class Proposant {
 
     public String getSouhaits() {
         return this.souhaits.toString();
+    }
+
+    public boolean prefere(Disposant d1, Disposant d2) {
+        Integer rangD1 = this.souhaits.indexOf(d1);
+        Integer rangD2 = this.souhaits.indexOf(d2);
+        if (rangD1 == -1) {
+            System.out.println("rangP1 vaut null");
+            return false;
+        }
+        if (rangD2 == -1){
+            System.out.println("rangP2 vaut null");
+            return false;
+        }
+        return rangD1 < rangD2;
     }
 
 }
