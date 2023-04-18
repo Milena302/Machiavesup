@@ -67,4 +67,7 @@ public class Proposant {
         return rangD1 < rangD2;
     }
 
+    public int getRang(Disposant disposant) {
+        return this.souhaits.indexOf(disposant);
+    }
 }

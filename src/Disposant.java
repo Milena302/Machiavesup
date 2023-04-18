@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class Disposant {
     private final int id;   // variable entière qui représente l'identifiant unique du disposant.

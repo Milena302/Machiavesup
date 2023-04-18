@@ -51,4 +51,9 @@ public class Mariages {
         });
         System.out.println("Sorted map by value: " + list);
     }
+
+    //méthode pour récupérer le conjoint d'un proposant
+    Disposant getConjoint(Proposant p) {
+        return couples.get(p);
+    }
 }

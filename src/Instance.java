@@ -80,29 +80,93 @@ public class Instance {
         return couples;
     }
 
-    /*
-    Mariages runGStoutesLesPossibilites(int taille) {
 
-    }
-
-
-     */
-/*
-    int calculeScoreDisposant(Mariages mariages){
-        //On va additionner le rang de preference obtenu pour l'ensemble des disposants
-        int score = 0;
-        for (Disposant d : disposants){
-            HashMap<Proposant, Integer> temp =  d.getSouhaits(1);
-
+    //Cas ou on considere toutes les possibilites
+    public Mariages runGSMeilleur(int taille) {
+        ArrayList<Proposant> permut = new ArrayList<>(proposants);
+        //System.out.println("Il y a " + permut.size() + "proposants");
+        ArrayList<ArrayList<Proposant>> toutesPermutations = permute(permut);
+        //System.out.println("Il y a " + toutesPermutations.size() + "permutations");
+        Mariages meilleurMariage = null;
+        int scoreMax = Integer.MAX_VALUE;
+        int i = 0;
+        for (ArrayList<Proposant> permutCourant : toutesPermutations) {
+            Mariages mariageCourant = calculeMariage(permutCourant, taille);
+            int scoreCourant = calculeScoreProposants(mariageCourant);
+            if (scoreCourant < scoreMax) {
+                scoreMax = scoreCourant;
+                meilleurMariage = mariageCourant;
             }
-        return score;
+            //System.out.println("i vaut : " + i);
+            i++;
+        }
+        //System.out.println("meilleur mariage");
+        return meilleurMariage;
+    }
+
+    private Mariages calculeMariage(ArrayList<Proposant> permut, int taille) {
+        //System.out.println("permut vaut " + permut.size());
+        Mariages couples = new Mariages();
+        ArrayList<Proposant> celibataires = new ArrayList<>(permut);
+        //System.out.println("Il y a " + celibataires.size() + " celibataires");
+        while (couples.size() < taille) {
+            //System.out.println("Il y a " + couples.size() + " mariages");
+            //System.out.println("Il y a " + celibataires.size() + " celibataires");
+            //System.out.println("permut size vaut" + permut.size());
+            Proposant p = celibataires.get(0);
+            Disposant d = p.appelleSuivant(taille);
+            if (d == null) {
+                celibataires.remove(p);
+            } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
+                couples.ajouteCouple(p, d);
+                celibataires.remove(p);
+                p.reinitialise();
+            } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
+                Proposant ancienConjoint = couples.conjoint(d);
+                couples.retireCouple(ancienConjoint);
+                couples.retireCouple(d);
+                celibataires.add(ancienConjoint);
+                couples.ajouteCouple(p, d);
+                celibataires.remove(p);
+                p.reinitialise();
+            }
+            //System.out.println("Apres les ifs");
+            //System.out.println("Il y a " + celibataires.size() + " celibataires");
+            //System.out.println("Il y a " + couples.size() + " mariages\n");
+            if (celibataires.size() == 0){
+                break;
+            }
+        }
+        //System.out.println("Avant le return : " + couples.size());
+        return couples;
     }
 
 
+    public static <T> ArrayList<ArrayList<T>> permute(ArrayList<T> input) {
+        ArrayList<ArrayList<T>> output = new ArrayList<ArrayList<T>>();
 
- */
+        if (input.size() == 0) {
+            output.add(new ArrayList<T>());
+            return output;
+        }
 
-    public int calculeScore(Mariages couples) {
+        T head = input.get(0);
+        ArrayList<T> rest = new ArrayList<T>(input.subList(1, input.size()));
+        ArrayList<ArrayList<T>> permutations = permute(rest);
+        for (ArrayList<T> permutation : permutations) {
+            for (int i = 0; i <= permutation.size(); i++) {
+                ArrayList<T> newPermutation = new ArrayList<T>();
+                newPermutation.addAll(permutation);
+                newPermutation.add(i, head);
+                output.add(newPermutation);
+            }
+        }
+        return output;
+    }
+
+
+    //2 methodes afin de pouvoir evaluer si les mariages sont favorables ou pas
+    public int calculeScoreDisposants(Mariages couples) {
         int score = 0;
         for (Disposant d : disposants) {
             Proposant conjoint = couples.conjoint(d);
@@ -112,6 +176,20 @@ public class Instance {
         return score;
     }
 
+    public int calculeScoreProposants(Mariages couples) {
+        int score = 0;
+        for (Proposant p : proposants) {
+            Disposant conjoint = couples.getConjoint(p);
+            if (conjoint != null) {
+                int rang = conjoint.getRang(p);
+                score += rang;
+            }
+        }
+        return score;
+    }
+
+
+    //Methode afin de determiner si les mariages obtenus sont stables ou pas
     public boolean estStable(Mariages couples) {
         for (Map.Entry<Proposant, Disposant> couple : couples.couples.entrySet()) {
             Proposant p = couple.getKey();
@@ -153,6 +231,9 @@ public class Instance {
         }
     }
 
+    //2 methodes pour verifier la stabilite des mariages
+    //On parcourt les proposants dans le sens inverse
+    //Si les resultats sont les memes pour dans l'ordre de passage et son inverse alors cela veut dire que les mariages sont stables
     public Mariages runGSRev(int taille) {
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(proposants);

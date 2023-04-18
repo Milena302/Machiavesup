@@ -16,7 +16,8 @@ public class Main {
         //couples.affiche();
         couples.afficheParProposant();
         System.out.println("Plus le score est bas mieux c'est");
-        System.out.println("Le score vaut : " + i.calculeScore(couples));
+        System.out.println("Le score des disposants vaut : " + i.calculeScoreDisposants(couples));
+        System.out.println("Le score des proposants vaut : " + i.calculeScoreProposants(couples));
 
 
         System.out.println("\nDans le sens inverse afin de prouver que les mariages ne sont pas stables");
@@ -27,7 +28,8 @@ public class Main {
         //couplesbis.affiche();
         couplesbis.afficheParProposant();
         System.out.println("Plus le score est bas mieux c'est");
-        System.out.println("Le score vaut : " + ibis.calculeScore(couplesbis));
+        System.out.println("Le score des disposants vaut : " + ibis.calculeScoreDisposants(couplesbis));
+        System.out.println("Le score des proposants vaut : " + ibis.calculeScoreProposants(couplesbis));
 
 
         System.out.println("\n\n\nLe cas volage");
@@ -37,7 +39,8 @@ public class Main {
         //couplesvolage.affiche();
         couplesvolage.afficheParProposant();
         System.out.println("Plus le score est bas mieux c'est");
-        System.out.println("Le score vaut : " + i2.calculeScore(couplesvolage));
+        System.out.println("Le score des disposants vaut : " + i2.calculeScoreDisposants(couplesvolage));
+        System.out.println("Le score des proposants vaut : " + i2.calculeScoreProposants(couplesvolage));
 
 
         System.out.println("\nDans le sens inverse afin de prouver que les mariages ne sont pas stables");
@@ -48,7 +51,21 @@ public class Main {
         //couplesvolage2.affiche();
         couplesvolage2.afficheParProposant();
         System.out.println("Plus le score est bas mieux c'est");
-        System.out.println("Le score vaut : " + i2bis.calculeScore(couplesvolage2));
+        System.out.println("Le score des disposants vaut : " + i2bis.calculeScoreDisposants(couplesvolage2));
+        System.out.println("Le score des proposants vaut : " + i2bis.calculeScoreProposants(couplesvolage2));
 
+
+
+        System.out.println("\n\nApres avoir considerer toutes les combinaisons possibles");
+        Instance i3 = new Instance(size, seed);
+        //ibis.affiche();
+        Mariages couples3 = i3.runGSMeilleur(size);
+        i3.estStable(couples3);
+        //couples3.affiche();
+        couples3.afficheParProposant();
+        System.out.println("Plus le score est bas mieux c'est");
+        System.out.println("Le score des disposants vaut : " + i3.calculeScoreDisposants(couples3));
+        System.out.println("Le score des proposants vaut : " + i3.calculeScoreProposants(couples3));
     }
+
 }
