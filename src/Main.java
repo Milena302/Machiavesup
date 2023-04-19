@@ -11,7 +11,7 @@ public class Main {
         Instance i = new Instance(size, seed);
         i.affiche();
         System.out.println("\n");
-        Mariages couples = i.runGS(size);
+        Mariages couples = i.runGS();
         i.estStable(couples);
         //couples.affiche();
         couples.afficheParProposant();
@@ -23,7 +23,7 @@ public class Main {
         System.out.println("\nDans le sens inverse afin de prouver que les mariages ne sont pas stables");
         Instance ibis = new Instance(size, seed);
         //ibis.affiche();
-        Mariages couplesbis = ibis.runGSRev(size);
+        Mariages couplesbis = ibis.runGSRev();
         ibis.estStable(couplesbis);
         //couplesbis.affiche();
         couplesbis.afficheParProposant();
@@ -34,7 +34,7 @@ public class Main {
 
         System.out.println("\n\n\nLe cas volage");
         Instance i2 = new Instance(size, seed);
-        Mariages couplesvolage = i2.runGSvolage(size);
+        Mariages couplesvolage = i2.runGSvolage();
         i2.estStable(couplesvolage);
         //couplesvolage.affiche();
         couplesvolage.afficheParProposant();
@@ -46,7 +46,7 @@ public class Main {
         System.out.println("\nDans le sens inverse afin de prouver que les mariages ne sont pas stables");
         Instance i2bis = new Instance(size, seed);
         //ibis.affiche();
-        Mariages couplesvolage2 = i2bis.runGSvolageRev(size);
+        Mariages couplesvolage2 = i2bis.runGSvolageRev();
         i2bis.estStable(couplesvolage2);
         //couplesvolage2.affiche();
         couplesvolage2.afficheParProposant();
@@ -67,5 +67,4 @@ public class Main {
         System.out.println("Le score des disposants vaut : " + i3.calculeScoreDisposants(couples3));
         System.out.println("Le score des proposants vaut : " + i3.calculeScoreProposants(couples3));
     }
-
 }

@@ -11,7 +11,7 @@ public class Proposant {
     private ArrayList<Disposant> souhaits;
     private int rangAppel;
 
-    Disposant appelleSuivant(int taille) {
+    Disposant appelleSuivant() {
         // renvoie le disposant suivant dans la liste
         // on a suppose qu'il y a autant de proposant que de disposant,
         // et donc on n'atteint jamais la fin de la liste de souhaits

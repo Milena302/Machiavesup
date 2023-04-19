@@ -20,7 +20,7 @@ public class Disposant {
     // génère une liste de souhaits aléatoire pour le disposant, ordre partiel
     public void genereListeSouhaits(ArrayList<Proposant> proposants) {
         Random random = new Random(seed);
-        int rangMax = proposants.size(); // choix arbitraire!
+        int rangMax = proposants.size()/2; // choix arbitraire!
         for (Proposant p : proposants) {
             Integer rang = random.nextInt(rangMax);
             this.souhaits.put(p, rang);
@@ -50,8 +50,6 @@ public class Disposant {
     public String getSouhaits() {
         return this.souhaits.toString();
     }
-
-
 
     public HashMap<Proposant, Integer> getSouhaits(int i){
         return souhaits;

@@ -4,10 +4,8 @@ import java.util.*;
 
 public class Instance {
     // Un jeu de données sur lequel on va exécuter l'algorithme de Gale-Shapley
-
     ArrayList<Proposant> proposants;
     ArrayList<Disposant> disposants;
-
 
     Instance(int size, int seed) {
         disposants = new ArrayList<>();
@@ -32,12 +30,12 @@ public class Instance {
     }
 
     //Cas fidelite
-    Mariages runGS(int taille) {
+    Mariages runGS() {
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
         while (celibataires.size() > 0) {
             Proposant p = celibataires.get(0);
-            Disposant d = p.appelleSuivant(taille);
+            Disposant d = p.appelleSuivant();
             if (d == null) {
                 celibataires.remove(p);
             } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
@@ -56,12 +54,12 @@ public class Instance {
     }
 
     //cas volage
-    Mariages runGSvolage(int taille) {
+    Mariages runGSvolage() {
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
         while (celibataires.size() > 0) {
             Proposant p = celibataires.get(0);
-            Disposant d = p.appelleSuivant(taille);
+            Disposant d = p.appelleSuivant();
             if (d == null) {
                 celibataires.remove(p);
             } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
@@ -84,12 +82,9 @@ public class Instance {
     //Cas ou on considere toutes les possibilites
     public Mariages runGSMeilleur(int taille) {
         ArrayList<Proposant> permut = new ArrayList<>(proposants);
-        //System.out.println("Il y a " + permut.size() + "proposants");
         ArrayList<ArrayList<Proposant>> toutesPermutations = permute(permut);
-        //System.out.println("Il y a " + toutesPermutations.size() + "permutations");
         Mariages meilleurMariage = null;
         int scoreMax = Integer.MAX_VALUE;
-        int i = 0;
         for (ArrayList<Proposant> permutCourant : toutesPermutations) {
             Mariages mariageCourant = calculeMariage(permutCourant, taille);
             int scoreCourant = calculeScoreProposants(mariageCourant);
@@ -97,24 +92,16 @@ public class Instance {
                 scoreMax = scoreCourant;
                 meilleurMariage = mariageCourant;
             }
-            //System.out.println("i vaut : " + i);
-            i++;
         }
-        //System.out.println("meilleur mariage");
         return meilleurMariage;
     }
 
     private Mariages calculeMariage(ArrayList<Proposant> permut, int taille) {
-        //System.out.println("permut vaut " + permut.size());
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(permut);
-        //System.out.println("Il y a " + celibataires.size() + " celibataires");
         while (couples.size() < taille) {
-            //System.out.println("Il y a " + couples.size() + " mariages");
-            //System.out.println("Il y a " + celibataires.size() + " celibataires");
-            //System.out.println("permut size vaut" + permut.size());
             Proposant p = celibataires.get(0);
-            Disposant d = p.appelleSuivant(taille);
+            Disposant d = p.appelleSuivant();
             if (d == null) {
                 celibataires.remove(p);
             } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
@@ -130,14 +117,10 @@ public class Instance {
                 celibataires.remove(p);
                 p.reinitialise();
             }
-            //System.out.println("Apres les ifs");
-            //System.out.println("Il y a " + celibataires.size() + " celibataires");
-            //System.out.println("Il y a " + couples.size() + " mariages\n");
             if (celibataires.size() == 0){
                 break;
             }
         }
-        //System.out.println("Avant le return : " + couples.size());
         return couples;
     }
 
@@ -223,15 +206,13 @@ public class Instance {
         }
     }
 
-    //2 methodes pour verifier la stabilite des mariages
-    //On parcourt les proposants dans le sens inverse
-    //Si les resultats sont les memes pour dans l'ordre de passage et son inverse alors cela veut dire que les mariages sont stables
-    public Mariages runGSRev(int taille) {
+    //On considere les listes des proposants dans le sens inverse afin de verifier si les mariages seront les memes
+    public Mariages runGSRev() {
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
         while (celibataires.size() > 0) {
             Proposant p = celibataires.get(celibataires.size() - 1);
-            Disposant d = p.appelleSuivant(taille);
+            Disposant d = p.appelleSuivant();
             if (d == null) {
                 celibataires.remove(p);
             } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
@@ -249,12 +230,12 @@ public class Instance {
         return couples;
     }
 
-    public Mariages runGSvolageRev(int taille) {
+    public Mariages runGSvolageRev() {
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
         while (celibataires.size() > 0) {
             Proposant p = celibataires.get(celibataires.size() - 1);
-            Disposant d = p.appelleSuivant(taille);
+            Disposant d = p.appelleSuivant();
             if (d == null) {
                 celibataires.remove(p);
             } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
