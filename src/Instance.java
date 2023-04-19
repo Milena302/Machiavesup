@@ -190,27 +190,18 @@ public class Instance {
 
 
     //Methode afin de determiner si les mariages obtenus sont stables ou pas
+    //mariage instable si il existe deux couples (p1,d1), (p2,d2) tels que p1 préfère d2 à d1 *ET* d2 préfère p1 à p2
     public boolean estStable(Mariages couples) {
-        for (Map.Entry<Proposant, Disposant> couple : couples.couples.entrySet()) {
-            Proposant p = couple.getKey();
-            Disposant d = couple.getValue();
-            //verifier la fidelite pour d
-            for(Proposant autreP : proposants){
-                if (autreP == p){
-                    continue;
-                }
-                if (d.prefere(autreP, p)) {
-                    System.out.println("Il y a au moins un cas d'infidelite possible pour les disposants");
-                    return false;
-                }
-            }
-            //verifier la fidelite pour les proposants
-            for (Disposant autreD : disposants){
-                if (autreD == d){
-                    continue;
-                }
-                if (p.prefere(autreD, d)){
-                    System.out.println("Il y a au moins un cas d'infidelite possible pour les proposants");
+        if (couples == null) { return false; }
+        for (Map.Entry<Proposant, Disposant> couple1 : couples.couples.entrySet()) {
+            Proposant p1 = couple1.getKey();
+            Disposant d1 = couple1.getValue();
+            for (Map.Entry<Proposant, Disposant> couple2 : couples.couples.entrySet()) {
+                if (couple1.equals(couple2)) { continue; }
+                Proposant p2 = couple2.getKey();
+                Disposant d2 = couple2.getValue();
+                if (d2.prefere(p1, p2) && p1.prefere(d2, d1)) {
+                    System.out.println("Il y a au moins un cas d'infidelite possible entre " + p1.toString() + " et " + d1.toString() + " et " + p2.toString() + " et " + d2.toString());
                     return false;
                 }
             }
@@ -218,6 +209,7 @@ public class Instance {
         System.out.println("Le mariage est stable");
         return true;
     }
+
 
     void affiche() {
         //Affichage des disposants
