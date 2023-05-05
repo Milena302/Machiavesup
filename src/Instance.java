@@ -29,10 +29,13 @@ public class Instance {
 
     }
 
-    //Cas fidelite
     Mariages runGS() {
+        return runGS(this.proposants);
+    }
+
+    //Cas fidelite
+    Mariages runGS(ArrayList<Proposant> celibataires) {
         Mariages couples = new Mariages();
-        ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
         while (celibataires.size() > 0) {
             Proposant p = celibataires.get(0);
             Disposant d = p.appelleSuivant();
@@ -43,11 +46,10 @@ public class Instance {
                 celibataires.remove(p);
             } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
                 Proposant ancienConjoint = couples.conjoint(d);
-                couples.retireCouple(ancienConjoint);
                 couples.retireCouple(d);
-                celibataires.add(ancienConjoint);
                 couples.ajouteCouple(p, d);
                 celibataires.remove(p);
+                celibataires.add(ancienConjoint);
             }
         }
         return couples;
@@ -86,7 +88,8 @@ public class Instance {
         Mariages meilleurMariage = null;
         int scoreMax = Integer.MAX_VALUE;
         for (ArrayList<Proposant> permutCourant : toutesPermutations) {
-            Mariages mariageCourant = calculeMariage(permutCourant, taille);
+            for(Proposant p:permutCourant) p.reinitialise();
+            Mariages mariageCourant = runGS(permutCourant);
             int scoreCourant = calculeScoreProposants(mariageCourant);
             if (scoreCourant < scoreMax) {
                 scoreMax = scoreCourant;
@@ -96,33 +99,33 @@ public class Instance {
         return meilleurMariage;
     }
 
-    private Mariages calculeMariage(ArrayList<Proposant> permut, int taille) {
-        Mariages couples = new Mariages();
-        ArrayList<Proposant> celibataires = new ArrayList<>(permut);
-        while (couples.size() < taille) {
-            Proposant p = celibataires.get(0);
-            Disposant d = p.appelleSuivant();
-            if (d == null) {
-                celibataires.remove(p);
-            } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
-                couples.ajouteCouple(p, d);
-                celibataires.remove(p);
-                p.reinitialise();
-            } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
-                Proposant ancienConjoint = couples.conjoint(d);
-                couples.retireCouple(ancienConjoint);
-                couples.retireCouple(d);
-                celibataires.add(ancienConjoint);
-                couples.ajouteCouple(p, d);
-                celibataires.remove(p);
-                p.reinitialise();
-            }
-            if (celibataires.size() == 0){
-                break;
-            }
-        }
-        return couples;
-    }
+    // private Mariages calculeMariage(ArrayList<Proposant> permut, int taille) {
+    //     Mariages couples = new Mariages();
+    //     ArrayList<Proposant> celibataires = new ArrayList<>(permut);
+    //     while (couples.size() < taille) {
+    //         Proposant p = celibataires.get(0);
+    //         Disposant d = p.appelleSuivant();
+    //         if (d == null) {
+    //             celibataires.remove(p);
+    //         } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
+    //             couples.ajouteCouple(p, d);
+    //             celibataires.remove(p);
+    //             p.reinitialise();
+    //         } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
+    //             Proposant ancienConjoint = couples.conjoint(d);
+    //             couples.retireCouple(ancienConjoint);
+    //             couples.retireCouple(d);
+    //             celibataires.add(ancienConjoint);
+    //             couples.ajouteCouple(p, d);
+    //             celibataires.remove(p);
+    //             p.reinitialise();
+    //         }
+    //         if (celibataires.size() == 0){
+    //             break;
+    //         }
+    //     }
+    //     return couples;
+    // }
 
 
     public static <T> ArrayList<ArrayList<T>> permute(ArrayList<T> input) {

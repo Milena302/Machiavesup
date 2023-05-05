@@ -3,7 +3,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        int size = 8;   //Taille de chaque echantillon
+        int size = 5000;   //Taille de chaque echantillon
         int seed = 25;  //Pour l'aleatoire
 
 
