@@ -8,6 +8,9 @@ type instance = {
 }
 
 
+let fiance d p couplage = 
+  (d,p)::(List.remove_assoc d couplage)
+
 let rec run_gs_aux instance proposants_celibataires couplage_partiel = 
   match proposants_celibataires with
   | [] -> couplage_partiel
@@ -17,10 +20,10 @@ let rec run_gs_aux instance proposants_celibataires couplage_partiel =
     | Some d1 ->
       match List.assoc_opt d1 couplage_partiel with
       | None -> (* d1 est celibataire *)
-        run_gs_aux instance  props ((d1,p1)::couplage_partiel)
+        run_gs_aux instance  props (fiance d1 p1 couplage_partiel)
       | Some p2 -> (* d1 est fiance à p2 *)
         let (p,p') = if instance.prefere d1 p1 p2 then (p1, p2) else (p2, p1) in
-        run_gs_aux instance (p'::props) ((d1,p)::couplage_partiel)
+        run_gs_aux instance (p'::props) (fiance  d1 p couplage_partiel)
 
 let run_gs instance : (disposant * proposant ) list =
   run_gs_aux instance instance.proposants []
@@ -45,13 +48,13 @@ let run_gs_non_det disposant0 instance : (disposant * proposant ) list list =
         (* branche 1 : d0 rejete la proposition de p1 *)
         (iter (p1::props) couplage_partiel meilleur_rejete2) @ 
         (* branche 2 : d1 accepte la proposition de p1 *)
-        (if not p1_a_sa_chance then [] else [run_gs_aux inst2 proposants_celibataires ((d1,p1)::couplage_partiel)])        
+        (if not p1_a_sa_chance then [] else [run_gs_aux inst2 props (fiance d1 p1 couplage_partiel)])        
       end else match List.assoc_opt d1 couplage_partiel with
       | None -> (* d1 est celibataire *)
-        iter props ((d1,p1)::couplage_partiel) meilleur_rejete
+        iter props (fiance d1 p1 couplage_partiel) meilleur_rejete
       | Some p2 -> (* d1 est fiance à p2 *)
         let (p,p') = if instance.prefere d1 p1 p2 then (p1, p2) else (p2, p1) in
-        iter (p'::props) ((d1,p)::couplage_partiel) meilleur_rejete
+        iter (p'::props) (fiance  d1 p couplage_partiel) meilleur_rejete
     in iter instance.proposants [] None
 
 let index a x = 
@@ -67,16 +70,16 @@ let instance_of_matrices m1 m2 =
   let prefere (D i) (P j) (P k) = 
     let l = m2.(i) in
     index l j < index l k in
-  let rec gen rang_appel =
+  let rec mk_instance rang_appel =
     let rang_appel = Array.copy rang_appel in
-    let appelle_suivant (P i) = 
+    let appelle_suivant (P i) =
       let r = rang_appel.(i) in
       if r < Array.length m1.(i) then begin
         rang_appel.(i) <- r + 1;
         Some (D (m1.(i).(r)))
       end else  None in
-      {proposants;prefere;appelle_suivant;clone} in
-    {proposants;prefere;appelle_suivant;clone}
+    {proposants;prefere;appelle_suivant;clone = fun () -> mk_instance rang_appel} in
+  mk_instance (Array.make nb_props 0)
 
 let m1 = [|
   [| 0; 1|];
