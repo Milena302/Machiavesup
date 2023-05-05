@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Mariages {
-    
+
     HashMap<Proposant, Disposant> couples;
 
     Mariages() {
@@ -50,6 +50,20 @@ public class Mariages {
             }
         });
         System.out.println("Sorted map by value: " + list);
+    }
+
+
+    void afficheLesRangsDePreferenceObtenus(){
+        System.out.println("Affichage des rangs de preference obtenus");
+        System.out.println("Du point de vue des proposants :");
+        for (Map.Entry<Proposant, Disposant> couple : couples.entrySet()) {
+            System.out.println(couple.getKey() + "\t" + couple.getKey().getRang(couple.getValue()));
+        }
+
+        System.out.println("Du point de vue des disposants");
+        for (Map.Entry<Proposant, Disposant> couple : couples.entrySet()) {
+            System.out.println(couple.getValue() + "\t" + couple.getValue().getRang(couple.getKey()));
+        }
     }
 
     //méthode pour récupérer le conjoint d'un proposant

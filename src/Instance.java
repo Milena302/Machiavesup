@@ -7,6 +7,11 @@ public class Instance {
     ArrayList<Proposant> proposants;
     ArrayList<Disposant> disposants;
 
+    /**
+     * Constructeur
+     * @param size
+     * @param seed
+     */
     Instance(int size, int seed) {
         disposants = new ArrayList<>();
         proposants = new ArrayList<>();
@@ -29,7 +34,11 @@ public class Instance {
 
     }
 
-    //Cas fidelite
+    /**
+     * Gale Shapley avec la strategie fidelite s
+     * si meme rang de preference entre 2 hommes, la femme garde son partenaire actuel
+     * @return
+     */
     Mariages runGS() {
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
@@ -43,7 +52,7 @@ public class Instance {
                 celibataires.remove(p);
             } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
                 Proposant ancienConjoint = couples.conjoint(d);
-                couples.retireCouple(ancienConjoint);
+                //couples.retireCouple(ancienConjoint);
                 couples.retireCouple(d);
                 celibataires.add(ancienConjoint);
                 couples.ajouteCouple(p, d);
@@ -53,7 +62,11 @@ public class Instance {
         return couples;
     }
 
-    //cas volage
+    /**
+     * Gale Shapley avec la strategie volage
+     * si meme rang de preference entre 2 hommes la femme change de partenaire
+     * @return
+     */
     Mariages runGSvolage() {
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
@@ -79,7 +92,13 @@ public class Instance {
     }
 
 
-    //Cas ou on considere toutes les possibilites
+    /**
+     * On construit toutes les permutations possibles pour l'ordre de passage des proposants
+     * Dans le but de considerer toutes les possibilites
+     * Inconvenient : la complexite
+     * @param taille
+     * @return
+     */
     public Mariages runGSMeilleur(int taille) {
         ArrayList<Proposant> permut = new ArrayList<>(proposants);
         ArrayList<ArrayList<Proposant>> toutesPermutations = permute(permut);
@@ -87,7 +106,8 @@ public class Instance {
         int scoreMax = Integer.MAX_VALUE;
         for (ArrayList<Proposant> permutCourant : toutesPermutations) {
             Mariages mariageCourant = calculeMariage(permutCourant, taille);
-            int scoreCourant = calculeScoreProposants(mariageCourant);
+            int scoreCourant = calculeScoreDisposants(mariageCourant);  //Ici on choisit quel groupe favoriser dans son ensemble
+            //Soit les proposants soit les disposants
             if (scoreCourant < scoreMax) {
                 scoreMax = scoreCourant;
                 meilleurMariage = mariageCourant;
@@ -124,7 +144,12 @@ public class Instance {
         return couples;
     }
 
-
+    /**
+     * Methode generant toutes les permutations possibles pour les 2 precedentes methodes
+     * @param input
+     * @return
+     * @param <T>
+     */
     public static <T> ArrayList<ArrayList<T>> permute(ArrayList<T> input) {
         ArrayList<ArrayList<T>> output = new ArrayList<ArrayList<T>>();
 
@@ -147,8 +172,13 @@ public class Instance {
         return output;
     }
 
-
-    //2 methodes afin de pouvoir evaluer si les mariages sont favorables ou pas
+    /**
+     * Deux methodes qui vont permettre d'evaluer quel mariage est plus favorable pour l'ensemble des hommes
+     * ou l'ensemble des femmes
+     * On remarque que le resultat change selon le groupe qui est privilegie
+     * @param couples
+     * @return
+     */
     public int calculeScoreDisposants(Mariages couples) {
         int score = 0;
         for (Disposant d : disposants) {
@@ -163,17 +193,19 @@ public class Instance {
         int score = 0;
         for (Proposant p : proposants) {
             Disposant conjoint = couples.getConjoint(p);
-            if (conjoint != null) {
-                int rang = conjoint.getRang(p);
-                score += rang;
-            }
+            int rang = p.getRang(conjoint);
+            score += rang;
         }
         return score;
     }
 
 
-    //Methode afin de determiner si les mariages obtenus sont stables ou pas
-    //mariage instable si il existe deux couples (p1,d1), (p2,d2) tels que p1 préfère d2 à d1 *ET* d2 préfère p1 à p2
+    /**
+     * Methode afin de determiner si les mariages obtenus sont stables ou pas
+     * mariage instable si il existe deux couples (p1,d1), (p2,d2) tels que p1 préfère d2 à d1 *ET* d2 préfère p1 à p2
+     * @param couples
+     * @return
+     */
     public boolean estStable(Mariages couples) {
         if (couples == null) { return false; }
         for (Map.Entry<Proposant, Disposant> couple1 : couples.couples.entrySet()) {
@@ -193,7 +225,9 @@ public class Instance {
         return true;
     }
 
-
+    /**
+     * Methode pour afficher les rangs de preferences pour chaque proposant et chaque disposant
+     */
     void affiche() {
         //Affichage des disposants
         for (Disposant d : disposants) {
@@ -206,51 +240,153 @@ public class Instance {
         }
     }
 
-    //On considere les listes des proposants dans le sens inverse afin de verifier si les mariages seront les memes
-    public Mariages runGSRev() {
+    /**
+     * 3 methodes dont le but est de trouver le meilleur mariage possible
+     */
+
+    public void afficherResultatOpti(){
         Mariages couples = new Mariages();
-        ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
+        System.out.println("\n\nOn essaye d'optimiser les mariages");
+        couples = runGSOptimize(couples, proposants);
+        System.out.println("fin des calculs");
+        couples.afficheParProposant();
+        System.out.println("Resultat des scores des disposants : " + calculeScoreDisposants(couples));
+        System.out.println("Resultat des scores des proposants : " + calculeScoreProposants(couples));
+    }
+
+    public int calculeScoreProposants(Mariages couples, ArrayList<Proposant> celibataires) {
+        int score = 0;
+        for (Proposant p : celibataires) {
+            Disposant conjoint = couples.getConjoint(p);
+            if (conjoint != null) { // on ne considère pas les proposants mariés
+                int rang = p.getRang(conjoint);
+                score += rang;
+            }
+        }
+        return score;
+    }
+
+    Mariages runGSOptimize(Mariages couples, ArrayList<Proposant> celibataires) {
         while (celibataires.size() > 0) {
-            Proposant p = celibataires.get(celibataires.size() - 1);
+            Proposant p = celibataires.get(0);
             Disposant d = p.appelleSuivant();
             if (d == null) {
                 celibataires.remove(p);
-            } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
-                couples.ajouteCouple(p, d);
-                celibataires.remove(p);
-            } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
-                Proposant ancienConjoint = couples.conjoint(d);
-                couples.retireCouple(ancienConjoint);
-                couples.retireCouple(d);
-                celibataires.add(ancienConjoint);
-                couples.ajouteCouple(p, d);
-                celibataires.remove(p);
+                return couples;
+            } else {
+                if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)){
+                    couples.ajouteCouple(p, d);
+                    celibataires.remove(p);
+                }
+                else if(d.prefere(p, couples.conjoint(d))){
+                    Proposant ancienConjoint = couples.conjoint(d);
+                    couples.retireCouple(ancienConjoint);
+                    couples.retireCouple(d);
+                    celibataires.add(ancienConjoint);
+                    couples.ajouteCouple(p, d);
+                    celibataires.remove(p);
+                } else if (d.identique(p, couples.conjoint(d))) {
+                    Mariages couples1 = new Mariages();
+                    couples1 = couples;
+                    couples1 = runGSOptimize(couples1, celibataires);
+                    int count1 = calculeScoreProposants(couples1, celibataires);
+
+                    Mariages couples2 = new Mariages();
+                    couples2 = couples;
+                    Proposant ancienConjoint = couples2.conjoint(d);
+                    couples2.retireCouple(ancienConjoint);
+                    couples2.retireCouple(d);
+                    celibataires.add(ancienConjoint);
+                    couples2.ajouteCouple(p, d);
+                    celibataires.remove(p);
+                    couples2 = runGSOptimize(couples2, celibataires);
+
+                    int count2 = calculeScoreProposants(couples2, celibataires);
+                    if(count1 < count2) {
+                        couples = couples1;
+                    } else if (count2 <= count1){
+                        couples = couples2;
+                    }
+                }
             }
         }
+        if (estComplet(couples)) {
+            return couples;
+        }
+        return null;
+    }
+
+
+    /**
+     * Methodes servant a optimiser les resultats pour un disposant afin d'observer si il est possible
+     * d'ameliorer les resultats pour un disposant
+     */
+
+    public Mariages chercherAOptimiserUnDisposant(Disposant d0, ArrayList<Proposant> celibataires, ArrayList<Disposant> femmes, Mariages couples) {
+        //Mariages couples = new Mariages();
+        if (celibataires.size() == 0){
+            return couples;
+        } else {
+            ArrayList<Disposant> meilleursChoix = new ArrayList<Disposant>();
+            meilleursChoix = celibataires.get(0).disposantsRangMin();
+            if (celibataires.get(0).estDansListe(d0, meilleursChoix)){
+                //La recursive
+                //parcours 1
+                Mariages couples1 = new Mariages();
+                couples1 = couples;
+                couples1.ajouteCouple(celibataires.get(0), d0);
+                ArrayList<Proposant> celibataires1 = new ArrayList<Proposant>();
+                celibataires1.remove(0);
+                chercherAOptimiserUnDisposant(d0, celibataires1, femmes, couples1);
+                //parcours 2
+                Mariages couples2 = new Mariages();
+                couples2 = couples;
+                ArrayList<Disposant> femmes2 = new ArrayList<Disposant>();
+
+            } else {
+                Proposant p = celibataires.get(0);
+                Disposant d = p.appelleSuivant();
+                if (d == null) {
+                    celibataires.remove(p);
+                } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
+                    couples.ajouteCouple(p, d);
+                    celibataires.remove(p);
+                } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
+                    Proposant ancienConjoint = couples.conjoint(d);
+                    //couples.retireCouple(ancienConjoint);
+                    couples.retireCouple(d);
+                    celibataires.add(ancienConjoint);
+                    couples.ajouteCouple(p, d);
+                    celibataires.remove(p);
+                }
+            }
+        }
+
         return couples;
     }
 
-    public Mariages runGSvolageRev() {
+    public void afficherMariageOptimalPourA() {
         Mariages couples = new Mariages();
-        ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
-        while (celibataires.size() > 0) {
-            Proposant p = celibataires.get(celibataires.size() - 1);
-            Disposant d = p.appelleSuivant();
-            if (d == null) {
-                celibataires.remove(p);
-            } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
-                couples.ajouteCouple(p, d);
-                celibataires.remove(p);
-            } else if (d.prefere(p, couples.conjoint(d)) || d.identique(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
-                // ou si d n'a pas de preference entre p et son conjoint actuel
-                Proposant ancienConjoint = couples.conjoint(d);
-                couples.retireCouple(ancienConjoint);
-                couples.retireCouple(d);
-                celibataires.add(ancienConjoint);
-                couples.ajouteCouple(p, d);
-                celibataires.remove(p);
-            }
+        ArrayList<Proposant> celibataires = new ArrayList<Proposant>();
+        celibataires = this.proposants;
+        ArrayList<Disposant> femmes = new ArrayList<Disposant>();
+        couples = chercherAOptimiserUnDisposant(disposants.get(0), celibataires, femmes, couples);
+
+        System.out.println("Le disposant dont on cherche a ameliorer le score est le suivant : " + disposants.get(0).toString());
+        couples.afficheParProposant();
+        System.out.println("Le score des disposants vaut : " + calculeScoreDisposants(couples));
+        System.out.println("Le score des proposants vaut : " + calculeScoreProposants(couples));
+        couples.afficheLesRangsDePreferenceObtenus();
+    }
+
+    /**
+     * Une methode de controle afin de s'assurer que le nombre de mariages obtenus est le bon
+     */
+    private boolean estComplet(Mariages couples) {
+        if (couples.size() == disposants.size()){
+            return true;
+        } else{
+            return false;
         }
-        return couples;
     }
 }

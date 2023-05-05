@@ -43,7 +43,7 @@ public class Disposant {
         return this.souhaits.get(p1) < this.souhaits.get(p2);
     }
 
-    @Override 
+    @Override
     public String toString() { return "F" + id; }
 
     //renvoie une représentation sous forme de chaîne de caractères des souhaits du disposant pour chaque proposant.
