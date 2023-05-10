@@ -3,8 +3,8 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        int size = 8;   //Taille de chaque echantillon
-        int seed = 12;  //Pour l'aleatoire
+        int size = 5000;   //Taille de chaque echantillon
+        int seed = 25;  //Pour l'aleatoire
 
 
         System.out.println("Le cas fidelite");
