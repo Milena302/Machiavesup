@@ -71,4 +71,29 @@ public class Mariages {
     Disposant getConjoint(Proposant p) {
         return couples.get(p);
     }
+
+    /**
+     * Les deux methodes suivantes servent a verifier dans la methode ..... se trouvant dans la classe Mariages qu'une
+     * solution identique n'a pas deja ete trouve afin d'eviter les doublons.
+     * Cela a servi de determiner combien de solutions maximales il peut exister (donc qu'il peut exister plus d'une
+     * solution optimale
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Mariages)) {
+            return false;
+        }
+        Mariages other = (Mariages) o;
+        return Objects.equals(couples, other.couples);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(couples);
+    }
 }

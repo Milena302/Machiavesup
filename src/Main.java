@@ -5,6 +5,8 @@ import java.util.*;
  * Main pour une seule instance
  *
  */
+
+
 public class Main {
 
 
@@ -64,6 +66,21 @@ public class Main {
         couples3.afficheLesRangsDePreferenceObtenus();
         System.out.println("Un disposant a en moyenne son choix au rang " + scoreDisposants / size * 2);
         System.out.println("Un proposant a en moyenne son choix au rang " + scoreProposants / size);
+
+
+
+        System.out.println("\n\n\nOn va a present regarder combien de mariages optimaux existent");
+        Instance i3bis = new Instance(size, seed);
+        ArrayList<Mariages> Allcouples3 = i3bis.runGSTousLesMeilleurs(size);
+
+        System.out.println("On a obtenu " + Allcouples3.size() + " mariages differents");
+        for (Mariages mariage : Allcouples3) {
+            // appel à votre fonction qui affiche les résultats pour chaque mariage
+            i3bis.estStable(mariage);
+            i3bis.estStableEgalite(mariage);
+            mariage.afficheLesRangsDePreferenceObtenus();
+            System.out.println("--------------------");
+        }
 
 
         //Instance test = new Instance(size, seed);
@@ -183,6 +200,72 @@ public class Main {
         System.out.println(nbTrueToutesCombinaisonsEstStable + " true et " + nbFalseToutesCombinaisonsEstStable + " false");
         System.out.println("Pour la strategie fidelite et la stabilite considerant la situation d egalite comme etant instable :");
         System.out.println(nbTrueToutesCombinaisonsEstStableEgalite + " true et " + nbFalseToutesCombinaisonsEstStableEgalite + " false");
+    }
+}
+
+ */
+
+
+/**
+ * Main pour trouver le nombre maximale de solutions optimales apres avoir parcouru un certain nombre d'instances
+ */
+
+/*
+public class Main{
+
+    public static void main(String[] args){
+        int size = 8;   //Taille de chaque echantillon
+        int seed = 12;  //Pour l'aleatoire
+        int maximum = 0;
+        int tour=0;
+        int seedMax = 12;
+
+        //On a choisi it <=15000 afin de parcourir 5001 instances. Comme cela prend du temps a s'executer j'ai prefere laisser it <=150 a la place
+        //J'ai d'ailleurs commence par it <=150
+        for (int it =0; it <=150; it+=3) {
+            seed+=it;
+            //System.out.println("\n\n\nOn va a present regarder combien de mariages optimaux existent");
+            Instance i3bis = new Instance(size, seed);
+            ArrayList<Mariages> Allcouples3 = i3bis.runGSTousLesMeilleurs(size);
+
+            //System.out.println("On a obtenu " + Allcouples3.size() + " mariages differents");
+            //for (Mariages mariage : Allcouples3) {
+                // appel à votre fonction qui affiche les résultats pour chaque mariage
+                //i3bis.estStable(mariage);
+                //i3bis.estStableEgalite(mariage);
+                //mariage.afficheLesRangsDePreferenceObtenus();
+                //System.out.println("--------------------");
+            //}
+            //System.out.println("---------------------------");
+            //System.out.println("***");
+
+            if (maximum < Allcouples3.size()){
+                maximum = Allcouples3.size();
+                seedMax = seed;
+            }
+            tour++;
+        }
+        System.out.println("\n\nLe nombre maximal de mariages possibles trouves sur " + tour + " instances est " + maximum);
+        System.out.println("Il s'agit de l'instance obtenue avec la seed " + seedMax);
+        System.out.println("Les disposants sont favorise\n\n\n");       //Modifier la phrase selon le groupe que l'on veut favoriser dans son ensemble
+
+        Instance seedMaxEtude = new Instance(size, seedMax);
+        seedMaxEtude.affiche();
+        System.out.println("\n\n\n");
+        ArrayList<Mariages> AllcouplesSeed = seedMaxEtude.runGSTousLesMeilleurs(size);
+        for (Mariages mariage : AllcouplesSeed) {
+            // appel à votre fonction qui affiche les résultats pour chaque mariage
+            System.out.println("Stabilite comme pour Gale-Shapley");
+            seedMaxEtude.estStable(mariage);
+            System.out.println("La situation d'egalite peut engendrer de la jalousie");
+            seedMaxEtude.estStableEgalite(mariage);
+            mariage.afficheLesRangsDePreferenceObtenus();
+            System.out.println("Calcul des scores pour les proposants");
+            System.out.println(seedMaxEtude.calculeScoreProposants(mariage));
+            System.out.println("Calcul des scores pour les disposants");
+            System.out.println(seedMaxEtude.calculeScoreDisposants(mariage));
+            System.out.println("--------------------");
+        }
     }
 }
 

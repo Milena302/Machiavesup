@@ -21,6 +21,7 @@ public class Disposant {
     public void genereListeSouhaits(ArrayList<Proposant> proposants) {
         Random random = new Random(seed);
         int rangMax = proposants.size()/2; // choix arbitraire!
+        System.out.println("rangMax = " + rangMax);
         for (Proposant p : proposants) {
             Integer rang = random.nextInt(rangMax);
             this.souhaits.put(p, rang);

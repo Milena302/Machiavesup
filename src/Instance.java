@@ -116,6 +116,29 @@ public class Instance {
         return meilleurMariage;
     }
 
+    public ArrayList<Mariages> runGSTousLesMeilleurs(int taille) {
+        ArrayList<Proposant> permut = new ArrayList<>(proposants);
+        ArrayList<ArrayList<Proposant>> toutesPermutations = permute(permut);
+        ArrayList<Mariages> meilleursMariages = new ArrayList<>();
+        int scoreMax = Integer.MAX_VALUE;
+        for (ArrayList<Proposant> permutCourant : toutesPermutations) {
+            Mariages mariageCourant = calculeMariage(permutCourant, taille);
+            int scoreCourant = calculeScoreDisposants(mariageCourant);  //Ici on choisit quel groupe favoriser dans son ensemble
+            //Soit les proposants soit les disposants
+            if (scoreCourant < scoreMax) {
+                scoreMax = scoreCourant;
+                meilleursMariages.clear();
+                meilleursMariages.add(mariageCourant);
+            } else if (scoreCourant == scoreMax) {
+                if (!meilleursMariages.contains(mariageCourant)) {  //pour eviter les doublons
+                    meilleursMariages.add(mariageCourant);
+                }
+            }
+        }
+        return meilleursMariages;
+    }
+
+
     private Mariages calculeMariage(ArrayList<Proposant> permut, int taille) {
         Mariages couples = new Mariages();
         ArrayList<Proposant> celibataires = new ArrayList<>(permut);
