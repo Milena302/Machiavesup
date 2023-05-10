@@ -76,12 +76,16 @@ public class Main {
         System.out.println("On a obtenu " + Allcouples3.size() + " mariages differents");
         for (Mariages mariage : Allcouples3) {
             // appel à votre fonction qui affiche les résultats pour chaque mariage
+            System.out.println("La stabilite ne tenant pas compte des egalites possibles");
             i3bis.estStable(mariage);
+            System.out.println("L'egalite peut conduire a de l'infidelite");
             i3bis.estStableEgalite(mariage);
             mariage.afficheLesRangsDePreferenceObtenus();
             System.out.println("--------------------");
         }
 
+        Instance i5 = new Instance(size, seed);
+        i5.AfficherunGSMeilleursDisposants(size);
 
         //Instance test = new Instance(size, seed);
         //test.afficherResultatOpti();

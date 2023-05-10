@@ -224,6 +224,87 @@ public class Instance {
 
 
     /**
+     * Methodes pour trouver tous les mariages dont le score est le meilleur possible pour un disposant en particulier
+     *
+     */
+
+
+    public void AfficherunGSMeilleursDisposants(int taille) {
+        System.out.println("\n\n\nOn cherche a present a ameliorer le score pour un disposant en particulier");
+        ArrayList<Mariages> ToutesLesMeilleursMariagesPourA = new ArrayList<Mariages>();
+        Disposant A = disposants.get(0);
+        ToutesLesMeilleursMariagesPourA = runGSMeilleursDisposants(taille, A);
+        System.out.println("On a obtenu " + ToutesLesMeilleursMariagesPourA.size() + " differents mariages optimise pour le disposant " + A.toString());
+
+        int i=1;
+        while (ToutesLesMeilleursMariagesPourA.size() > 1 && i < disposants.size()) {
+            Disposant enCours = disposants.get(i);
+            int score = Integer.MAX_VALUE;
+            ArrayList<Mariages> ToutesLesMeilleursMariagesPourEnCours = new ArrayList<Mariages>();
+            for (Mariages mariage : ToutesLesMeilleursMariagesPourA){
+                int scoreCourant = ScoreDisposant(mariage, enCours);
+                if (scoreCourant < score){
+                    score = scoreCourant;
+                    ToutesLesMeilleursMariagesPourEnCours.clear();
+                    ToutesLesMeilleursMariagesPourEnCours.add(mariage);
+                } else if (scoreCourant == score) {
+                    ToutesLesMeilleursMariagesPourEnCours.add(mariage);
+                }
+            }
+            ToutesLesMeilleursMariagesPourA = ToutesLesMeilleursMariagesPourEnCours;
+            i++;
+        }
+
+        for (Mariages mariage : ToutesLesMeilleursMariagesPourA) {
+            System.out.println("La stabilite ne tenant pas compte des egalites possibles");
+            estStable(mariage);
+            System.out.println("L'egalite peut conduire a de l'infidelite");
+            estStableEgalite(mariage);
+            mariage.afficheLesRangsDePreferenceObtenus();
+            System.out.println("--------------------");
+        }
+    }
+
+    public ArrayList<Mariages> runGSMeilleursDisposants(int taille, Disposant disposant) {
+        ArrayList<Proposant> permut = new ArrayList<>(proposants);
+        ArrayList<ArrayList<Proposant>> toutesPermutations = permute(permut);
+        ArrayList<Mariages> meilleursMariages = new ArrayList<>();
+        int scoreMax = Integer.MAX_VALUE;
+        int scoreDisposant = Integer.MAX_VALUE;
+        //int scoreDisposant = disposant.getRang(couples.conjoint(disposant));
+        for (ArrayList<Proposant> permutCourant : toutesPermutations) {
+            Mariages mariageCourant = calculeMariage(permutCourant, taille);
+            int scoreCourant = ScoreDisposant(mariageCourant, disposant); // Ici on choisit quel groupe favoriser dans son ensemble
+            // Soit les proposants soit les disposants
+            if (scoreCourant < scoreMax) {
+                scoreMax = scoreCourant;
+                meilleursMariages.clear();
+                meilleursMariages.add(mariageCourant);
+            } else if (scoreCourant == scoreMax) {
+                if (!meilleursMariages.contains(mariageCourant)) { // pour éviter les doublons
+                    meilleursMariages.add(mariageCourant);
+                }
+            }
+        }
+        // On filtre les mariages qui ont un score supérieur à celui du disposant donné en paramètre
+        meilleursMariages.removeIf(mariage -> disposant.getRang(mariage.conjoint(disposant)) > scoreDisposant);
+        return meilleursMariages;
+    }
+
+    private int ScoreDisposant(Mariages couples, Disposant disposant) {
+        int score = 0;
+        for (Disposant d : disposants) {
+            if (d == disposant) {
+                Proposant conjoint = couples.conjoint(d);
+                int rang = d.getRang(conjoint);
+                score += rang;
+            }
+        }
+        return score;
+    }
+
+
+    /**
      * Methode afin de determiner si les mariages obtenus sont stables ou pas
      * mariage instable si il existe deux couples (p1,d1), (p2,d2) tels que p1 préfère d2 à d1 *ET* d2 préfère p1 à p2
      * @param couples
@@ -363,7 +444,6 @@ public class Instance {
      * Methodes servant a optimiser les resultats pour un disposant afin d'observer si il est possible
      * d'ameliorer les resultats pour un disposant
      */
-
     public Mariages chercherAOptimiserUnDisposant(Disposant d0, ArrayList<Proposant> celibataires, ArrayList<Disposant> femmes, Mariages couples) {
         //Mariages couples = new Mariages();
         if (celibataires.size() == 0){
@@ -431,4 +511,5 @@ public class Instance {
             return false;
         }
     }
+
 }
