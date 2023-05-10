@@ -34,13 +34,14 @@ public class Instance {
 
     }
 
+    /**
+     * Gale Shapley avec la strategie fidelite s
+     * si meme rang de preference entre 2 hommes, la femme garde son partenaire actuel
+     * @return
+     */
     Mariages runGS() {
-        return runGS(this.proposants);
-    }
-
-    //Cas fidelite
-    Mariages runGS(ArrayList<Proposant> celibataires) {
         Mariages couples = new Mariages();
+        ArrayList<Proposant> celibataires = new ArrayList<>(proposants);
         while (celibataires.size() > 0) {
             Proposant p = celibataires.get(0);
             Disposant d = p.appelleSuivant();
@@ -51,10 +52,11 @@ public class Instance {
                 celibataires.remove(p);
             } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
                 Proposant ancienConjoint = couples.conjoint(d);
+                //couples.retireCouple(ancienConjoint);
                 couples.retireCouple(d);
+                celibataires.add(ancienConjoint);
                 couples.ajouteCouple(p, d);
                 celibataires.remove(p);
-                celibataires.add(ancienConjoint);
             }
         }
         return couples;
@@ -103,9 +105,9 @@ public class Instance {
         Mariages meilleurMariage = null;
         int scoreMax = Integer.MAX_VALUE;
         for (ArrayList<Proposant> permutCourant : toutesPermutations) {
-            for(Proposant p:permutCourant) p.reinitialise();
-            Mariages mariageCourant = runGS(permutCourant);
-            int scoreCourant = calculeScoreProposants(mariageCourant);
+            Mariages mariageCourant = calculeMariage(permutCourant, taille);
+            int scoreCourant = calculeScoreDisposants(mariageCourant);  //Ici on choisit quel groupe favoriser dans son ensemble
+            //Soit les proposants soit les disposants
             if (scoreCourant < scoreMax) {
                 scoreMax = scoreCourant;
                 meilleurMariage = mariageCourant;
@@ -114,33 +116,33 @@ public class Instance {
         return meilleurMariage;
     }
 
-    // private Mariages calculeMariage(ArrayList<Proposant> permut, int taille) {
-    //     Mariages couples = new Mariages();
-    //     ArrayList<Proposant> celibataires = new ArrayList<>(permut);
-    //     while (couples.size() < taille) {
-    //         Proposant p = celibataires.get(0);
-    //         Disposant d = p.appelleSuivant();
-    //         if (d == null) {
-    //             celibataires.remove(p);
-    //         } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
-    //             couples.ajouteCouple(p, d);
-    //             celibataires.remove(p);
-    //             p.reinitialise();
-    //         } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
-    //             Proposant ancienConjoint = couples.conjoint(d);
-    //             couples.retireCouple(ancienConjoint);
-    //             couples.retireCouple(d);
-    //             celibataires.add(ancienConjoint);
-    //             couples.ajouteCouple(p, d);
-    //             celibataires.remove(p);
-    //             p.reinitialise();
-    //         }
-    //         if (celibataires.size() == 0){
-    //             break;
-    //         }
-    //     }
-    //     return couples;
-    // }
+    private Mariages calculeMariage(ArrayList<Proposant> permut, int taille) {
+        Mariages couples = new Mariages();
+        ArrayList<Proposant> celibataires = new ArrayList<>(permut);
+        while (couples.size() < taille) {
+            Proposant p = celibataires.get(0);
+            Disposant d = p.appelleSuivant();
+            if (d == null) {
+                celibataires.remove(p);
+            } else if (!couples.couples.containsKey(p) && !couples.couples.containsValue(d)) {
+                couples.ajouteCouple(p, d);
+                celibataires.remove(p);
+                p.reinitialise();
+            } else if (d.prefere(p, couples.conjoint(d))) { // Si d préfère p à son conjoint actuel
+                Proposant ancienConjoint = couples.conjoint(d);
+                couples.retireCouple(ancienConjoint);
+                couples.retireCouple(d);
+                celibataires.add(ancienConjoint);
+                couples.ajouteCouple(p, d);
+                celibataires.remove(p);
+                p.reinitialise();
+            }
+            if (celibataires.size() == 0){
+                break;
+            }
+        }
+        return couples;
+    }
 
     /**
      * Methode generant toutes les permutations possibles pour les 2 precedentes methodes
@@ -214,6 +216,25 @@ public class Instance {
                 Proposant p2 = couple2.getKey();
                 Disposant d2 = couple2.getValue();
                 if (d2.prefere(p1, p2) && p1.prefere(d2, d1)) {
+                    System.out.println("Il y a au moins un cas d'infidelite possible entre " + p1.toString() + " et " + d1.toString() + " et " + p2.toString() + " et " + d2.toString());
+                    return false;
+                }
+            }
+        }
+        System.out.println("Le mariage est stable");
+        return true;
+    }
+
+    public boolean estStableEgalite(Mariages couples) {
+        if (couples == null) { return false; }
+        for (Map.Entry<Proposant, Disposant> couple1 : couples.couples.entrySet()) {
+            Proposant p1 = couple1.getKey();
+            Disposant d1 = couple1.getValue();
+            for (Map.Entry<Proposant, Disposant> couple2 : couples.couples.entrySet()) {
+                if (couple1.equals(couple2)) { continue; }
+                Proposant p2 = couple2.getKey();
+                Disposant d2 = couple2.getValue();
+                if (d2.identique(p1, p2) && p1.prefere(d2, d1)) {
                     System.out.println("Il y a au moins un cas d'infidelite possible entre " + p1.toString() + " et " + d1.toString() + " et " + p2.toString() + " et " + d2.toString());
                     return false;
                 }

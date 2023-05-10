@@ -57,13 +57,14 @@ public class Mariages {
         System.out.println("Affichage des rangs de preference obtenus");
         System.out.println("Du point de vue des proposants :");
         for (Map.Entry<Proposant, Disposant> couple : couples.entrySet()) {
-            System.out.println(couple.getKey() + "\t" + couple.getKey().getRang(couple.getValue()));
+            System.out.print(couple.getKey() + "\t" + couple.getKey().getRang(couple.getValue()) + "\t\t");
         }
 
-        System.out.println("Du point de vue des disposants");
+        System.out.println("\nDu point de vue des disposants");
         for (Map.Entry<Proposant, Disposant> couple : couples.entrySet()) {
-            System.out.println(couple.getValue() + "\t" + couple.getValue().getRang(couple.getKey()));
+            System.out.print(couple.getValue() + "\t" + couple.getValue().getRang(couple.getKey()) + "\t\t");
         }
+        System.out.println();
     }
 
     //méthode pour récupérer le conjoint d'un proposant

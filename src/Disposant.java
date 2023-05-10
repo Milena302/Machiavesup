@@ -19,7 +19,6 @@ public class Disposant {
 
     // génère une liste de souhaits aléatoire pour le disposant, ordre partiel
     public void genereListeSouhaits(ArrayList<Proposant> proposants) {
-//        System.out.println("calcule souhait pour: " +  this);
         Random random = new Random(seed);
         int rangMax = proposants.size()/2; // choix arbitraire!
         for (Proposant p : proposants) {
